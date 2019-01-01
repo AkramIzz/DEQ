@@ -33,6 +33,9 @@ class Scanner {
 		return current >= source.length();
 	}
 
+// var c = 'a'\nragrea\n*/
+//                       ^ peek=\n 
+// advance
 	private char advance() {
 		return source.charAt(current++);
 	}
@@ -75,7 +78,10 @@ class Scanner {
 				if (match('/')) {
 					// A comment goes until the end of the line
 					while(peek() != '\n' && !isAtEnd()) advance();
-				} else {
+				} else if (match('*')) {
+					multilineComment();
+				}
+				else {
 					addToken(SLASH);
 				}
 				break;
@@ -127,7 +133,7 @@ class Scanner {
 
 		// Unterminated string
 		if (isAtEnd()) {
-			Interpreter.error(line, "Unterminatted string.");
+			Interpreter.error(line, "Unterminated string.");
 			return;
 		}
 
@@ -137,6 +143,26 @@ class Scanner {
 		// start+1 and current-1 trim the surrounding quotes
 		String value = source.substring(start+1, current-1);
 		addToken(STRING, value);
+	}
+
+	private void multilineComment() {
+		while ((peek() != '*' || peekNext() != '/') && !isAtEnd()) {
+			if (peek() == '/' && peekNext() == '*') {
+				advance(); advance();
+				multilineComment();
+				continue;
+			}
+			// **advance** and if it's a new line increment line
+			if (advance() == '\n') line++;
+		}
+
+		if (isAtEnd()) {
+			Interpreter.error(line, "Unterminated block comment");
+			return;
+		}
+
+		// Consume the star and slash (*/)
+		advance(); advance();
 	}
 
 	private void addToken(TokenType type) {
