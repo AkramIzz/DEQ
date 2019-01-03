@@ -53,6 +53,13 @@ public class Interpreter {
 		report(line, "", message);
 	}
 
+	static void error(Token token, String message) {
+		if (token.type == TokenType.EOF)
+			report(token.line, " at end", message);
+		else
+			report(token.line, "at '" + token.lexeme + "'", message);
+	}
+
 	private static void report(int line, String where, String message) {
 		System.err.println(
 			"[line " + line + "] Error" + where + ": " + message);
