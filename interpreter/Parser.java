@@ -43,7 +43,7 @@ class Parser {
 
 		if (match(QUESTION_MARK)) {
 			Expr onTrue = ternary();
-			consume(COLON, "Expected ':' after expression");
+			consume(COLON, "Expected ':' after then branch of ternary operator");
 			Expr onFalse = ternary();
 			expr = new Expr.Ternary(expr, onTrue, onFalse);
 		}
