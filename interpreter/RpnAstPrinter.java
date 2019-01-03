@@ -33,6 +33,11 @@ class RpnAstPrinter implements Expr.Visitor<String> {
 		return buildString(expr.operator.lexeme, expr.right);
 	}
 
+	@Override
+	public String visitTernaryExpr(Expr.Ternary expr) {
+		return buildString("?", expr.condition, expr.onTrue, expr.onFalse);
+	}
+
 	String buildString(String name, Expr... exprs) {
 		StringBuilder builder = new StringBuilder();
 
