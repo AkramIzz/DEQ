@@ -33,9 +33,6 @@ class Scanner {
 		return current >= source.length();
 	}
 
-// var c = 'a'\nragrea\n*/
-//                       ^ peek=\n 
-// advance
 	private char advance() {
 		return source.charAt(current++);
 	}
