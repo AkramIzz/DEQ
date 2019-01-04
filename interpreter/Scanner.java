@@ -95,7 +95,7 @@ class Scanner {
 				if (isDigit(c)) number();
 				else if (isAlpha(c)) identifier();
 				else
-					Interpreter.error(line, "Unexpected character.");
+					QED.error(line, "Unexpected character.");
 		}
 	}
 
@@ -132,7 +132,7 @@ class Scanner {
 
 		// Unterminated string
 		if (isAtEnd()) {
-			Interpreter.error(line, "Unterminated string.");
+			QED.error(line, "Unterminated string.");
 			return;
 		}
 
@@ -156,7 +156,7 @@ class Scanner {
 		}
 
 		if (isAtEnd()) {
-			Interpreter.error(line, "Unterminated block comment");
+			QED.error(line, "Unterminated block comment");
 			return;
 		}
 

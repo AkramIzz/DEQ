@@ -8,7 +8,7 @@ import java.nio.file.Paths;
 import java.nio.charset.Charset;
 import java.util.List;
 
-public class Interpreter {
+public class QED {
 	static boolean hadError = false;
 
 	public static void main(String[] args) throws IOException {
