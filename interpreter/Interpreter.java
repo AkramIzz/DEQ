@@ -3,7 +3,16 @@ package com.interpreter;
 import static com.interpreter.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object> {
-	public Object evaluate(Expr expr) {
+	public void interpret(Expr expr) {
+		try {
+			Object value = evaluate(expr);
+			System.out.println(stringify(value));
+		} catch(RuntimeError error) {
+			QED.runtimeError(error);
+		}
+	}
+
+	private Object evaluate(Expr expr) {
 		return expr.accept(this);
 	}
 
@@ -97,6 +106,20 @@ class Interpreter implements Expr.Visitor<Object> {
 		if (a == null || b == null) return false;
 
 		return a.equals(b);
+	}
+
+	private String stringify(Object object) {
+		if (object == null) return "nil";
+
+		// Work around Java adding ".0" to integer-valued doubles
+		if (object instanceof Double) {
+			String text = object.toString();
+			if (text.endsWith(".0"))
+				text = text.substring(0, text.length() - 2);
+			return text;
+		}
+
+		return object.toString();
 	}
 
 	private void checkNumberOperand(Token operator, Object operand) {
