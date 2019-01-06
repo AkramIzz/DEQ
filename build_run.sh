@@ -10,4 +10,4 @@ echo "javac interpreter"
 javac -d bin/ interpreter/*.java
 
 echo "java Interpreter"
-java -cp bin/ com.interpreter.Interpreter
+java -cp bin/ com.interpreter.QED
