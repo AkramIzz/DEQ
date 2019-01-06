@@ -54,6 +54,9 @@ class Interpreter implements Expr.Visitor<Object> {
 				return isEqual(left, right);
 			case BANG_EQUAL:
 				return !isEqual(left, right);
+
+			case COMMA:
+				return right;
 		}
 
 		// unreachable
