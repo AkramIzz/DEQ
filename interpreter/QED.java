@@ -9,6 +9,7 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 public class QED {
+	private static final Interpreter interpreter = new Interpreter();
 	static boolean hadError = false;
 	static boolean hadRuntimeError = false;
 
@@ -51,7 +52,7 @@ public class QED {
 
 		if (hadError) return;
 
-		System.out.println(new AstPrinter().print(expr));
+		interpreter.interpret(expr);
 	}
 
 	static void error(int line, String message) {
