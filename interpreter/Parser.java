@@ -31,9 +31,19 @@ class Parser {
 	}
 
 	private Stmt printStatement() {
-		Expr value = expression();
-		consume(SEMICOLON, "Exprect ';' after value");
-		return new Stmt.Print(value);
+		List<Expr> exprs = new ArrayList<>();
+		// we don't want to accept comma operator,
+		// because comma in print statement is used to seperate values
+		// that must be printed, and so we parse a ternary (next expression in precedence)
+		// and handle the comma token seperately from the comma operator.
+		exprs.add(ternary());
+
+		while(match(COMMA)) {
+			exprs.add(ternary());
+		}
+
+		consume(SEMICOLON, "Expected ';' at the end of print statement");
+		return new Stmt.Print(exprs);
 	}
 
 	private Stmt expressionStatement() {

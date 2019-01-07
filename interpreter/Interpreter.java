@@ -25,8 +25,11 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitPrintStmt(Stmt.Print stmt) {
-		Object val = evaluate(stmt.expression);
-		System.out.println(stringify(val));
+		for (Expr expr : stmt.expressions) {
+			Object val = evaluate(expr);
+			System.out.print(stringify(val) + " ");
+		}
+		System.out.println();
 		return null;
 	}
 

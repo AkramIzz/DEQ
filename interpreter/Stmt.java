@@ -23,14 +23,14 @@ abstract class Stmt {
     }
 
     static class Print extends Stmt {
-        Print(Expr expression) {
-            this.expression = expression;
+        Print(List<Expr> expressions) {
+            this.expressions = expressions;
         }
 
         <R> R accept(Visitor<R> visitor) {
             return visitor.visitPrintStmt(this);
         }
 
-        final Expr expression;
+        final List<Expr> expressions;
     }
 }
