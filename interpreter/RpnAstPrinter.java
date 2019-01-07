@@ -1,12 +1,47 @@
 package com.interpreter;
 
-class RpnAstPrinter implements Expr.Visitor<String> {
+import java.util.List;
+
+class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	// Main method in class
-	// call this method to get a string representation of the expression
-	String print(Expr expr) {
+	// call this method to get a string representation of program statements
+	String println(List<Stmt> statements) {
+		StringBuilder builder = new StringBuilder();
+		for (Stmt stmt : statements) {
+			builder.append(printStmt(stmt));
+			builder.append("\n");
+		}
+		return builder.toString();
+	}
+
+	String printStmt(Stmt statement) {
+		// `accept(this)` Calls the right visit function
+		// for the statement type
+		return statement.accept(this);
+	}
+
+	String printExpr(Expr expr) {
 		// `accept(this)` Calls the right visit function
 		// for the expression type
 		return expr.accept(this);
+	}
+
+	@Override
+	public String visitPrintStmt(Stmt.Print statement) {
+		StringBuilder builder = new StringBuilder();
+
+		for (Expr expr : statement.expressions) {
+			builder.append(printExpr(expr));
+			builder.append(" ");
+		}
+		builder.append("print");
+
+		return builder.toString();
+	}
+
+	@Override
+	public String visitExpressionStmt(Stmt.Expression statement) {
+		return printExpr(statement.expression);
 	}
 
 	@Override
@@ -16,7 +51,7 @@ class RpnAstPrinter implements Expr.Visitor<String> {
 
 	@Override
 	public String visitGroupingExpr(Expr.Grouping expr) {
-		return print(expr.expression);
+		return printExpr(expr.expression);
 	}
 
 	@Override
@@ -42,7 +77,7 @@ class RpnAstPrinter implements Expr.Visitor<String> {
 		StringBuilder builder = new StringBuilder();
 
 		for (Expr expr : exprs) {
-			builder.append(print(expr));
+			builder.append(printExpr(expr));
 			builder.append(" ");
 		}
 		builder.append(name);
