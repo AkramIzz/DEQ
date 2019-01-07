@@ -43,6 +43,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitVarStmt(Stmt.Var statement) {
+		return parenthesize("var " + statement.name.lexeme, statement.initializer);
+	}
+
+	@Override
 	public String visitExpressionStmt(Stmt.Expression statement) {
 		return printExpr(statement.expression);
 	}
