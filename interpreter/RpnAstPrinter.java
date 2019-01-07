@@ -73,6 +73,11 @@ class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 		return buildString("?", expr.condition, expr.onTrue, expr.onFalse);
 	}
 
+	@Override
+	public String visitVariableExpr(Expr.Variable expr) {
+		return expr.name.lexeme;
+	}
+
 	String buildString(String name, Expr... exprs) {
 		StringBuilder builder = new StringBuilder();
 
