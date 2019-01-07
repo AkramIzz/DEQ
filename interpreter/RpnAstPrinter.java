@@ -41,7 +41,9 @@ class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 
 	@Override
 	public String visitVarStmt(Stmt.Var statement) {
-		return buildString("var " + statement.name.lexeme, statement.initializer);
+		if (statement.initializer != null)
+			return buildString("var " + statement.name.lexeme, statement.initializer);
+		return "var " + statement.name.lexeme;
 	}
 
 	@Override
