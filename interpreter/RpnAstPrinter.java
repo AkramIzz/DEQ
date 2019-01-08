@@ -27,6 +27,20 @@ class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitBlockStmt(Stmt.Block statement) {
+		StringBuilder builder = new StringBuilder();
+
+		for (Stmt stmt : statement.statements) {
+			builder.append("  "); // indentation
+			builder.append(printStmt(stmt));
+			builder.append("\n"); // seperator
+		}
+		builder.append("block");
+
+		return builder.toString();
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print statement) {
 		StringBuilder builder = new StringBuilder();
 

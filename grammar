@@ -4,7 +4,9 @@ declaration -> varDecl | statement;
 
 varDecl -> 'var' IDENTIFIER ('=' expression)? ';'
 
-statement -> printStmt | exprStmt
+statement -> printStmt | exprStmt | blockStmt
+
+blockStmt -> '{' declaration* '}'
 
 printStmt -> 'print' ternary (',' ternary)* ';'
 
