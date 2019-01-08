@@ -4,7 +4,9 @@ declaration -> varDecl | statement;
 
 varDecl -> 'var' IDENTIFIER ('=' expression)? ';'
 
-statement -> printStmt | exprStmt | blockStmt
+statement -> printStmt | exprStmt | blockStmt | ifStmt
+
+ifStmt -> 'if' '(' expression ')' statement ('else' statement)?
 
 blockStmt -> '{' declaration* '}'
 
