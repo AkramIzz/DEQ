@@ -74,7 +74,27 @@ class Parser {
 	}
 
 	private Expr expression() {
-		return comma();
+		return assignment();
+	}
+
+	private Expr assignment() {
+		Expr expr = comma();
+
+		if (match(EQUAL)) {
+			Token equals = previous();
+			Expr rvalue = comma();
+			if (expr instanceof Expr.Variable) {
+				Token name = ((Expr.Variable)expr).name;
+				return new Expr.Assign(name, rvalue);
+			}
+
+			// We don't need to throw the error because the parser
+			// isn't in a confused state and doesn't need to be
+			// synchronized. It's in a state where it can continue parsing
+			error(equals, "Can't assign to non variable");
+		}
+
+		return expr;
 	}
 
 	private Expr comma() {

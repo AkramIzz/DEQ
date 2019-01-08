@@ -10,7 +10,10 @@ printStmt -> 'print' ternary (',' ternary)* ';'
 
 exprStmt -> expression ';'
 
-expression -> comma
+expression -> assignment
+
+assignment -> IDENTIFIER '=' assignment 
+             | comma
 
 comma -> ternary (',' ternary)*
 
