@@ -50,6 +50,12 @@ class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitWhileStmt(Stmt.While statement) {
+		return printExpr(statement.condition)
+			+ " " + printStmt(statement.body) + " if";
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print statement) {
 		StringBuilder builder = new StringBuilder();
 

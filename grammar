@@ -5,8 +5,11 @@ declaration -> varDecl | statement;
 varDecl -> 'var' IDENTIFIER ('=' expression)? ';'
 
 statement -> printStmt | exprStmt | blockStmt | ifStmt
+            | whileStmt
 
 ifStmt -> 'if' '(' expression ')' statement ('else' statement)?
+
+whileStmt -> 'while' '(' expression ')' statement
 
 blockStmt -> '{' declaration* '}'
 
