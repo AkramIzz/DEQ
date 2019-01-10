@@ -50,8 +50,6 @@ class Parser {
 		if (match(IF)) return ifStatement();
 		if (match(LEFT_BRACE)) return blockStatement();
 
-		if (match(LEFT_BRACE)) return blockStatement();
-
 		return expressionStatement();
 	}
 
