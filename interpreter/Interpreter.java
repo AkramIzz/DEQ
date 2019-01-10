@@ -145,6 +145,19 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Object visitLogicalExpr(Expr.Logical expr) {
+		Object left = evaluate(expr.left);
+		switch (expr.operator.type) {
+			case OR:
+				if (isTruthy(left)) return left; break;
+			case AND:
+				if (!isTruthy(left)) return left; break;
+		}
+
+		return evaluate(expr.right);
+	}
+
+	@Override
 	public Object visitGroupingExpr(Expr.Grouping expr) {
 		return evaluate(expr.expression);
 	}

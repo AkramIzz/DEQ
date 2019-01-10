@@ -16,6 +16,9 @@ public class GenerateAst {
 			// ClassName : Fields
 			"Assign   : Token name, Expr value",
 			"Binary   : Expr left, Token operator, Expr right",
+			// This makes for cleaner impl in interpreter than cramming them in
+			// Binary expression type, although it's possible
+			"Logical  : Expr left, Token operator, Expr right",
 			"Grouping : Expr expression",
 			"Literal  : Object value",
 			"Unary    : Token operator, Expr right",

@@ -21,7 +21,11 @@ assignment -> IDENTIFIER '=' assignment
 
 comma -> ternary (',' ternary)*
 
-ternary -> equality ('?' ternary ':' ternary)?
+ternary -> logic_or ('?' ternary ':' ternary)?
+
+logic_or -> logic_and ('||' logic_and)*
+
+logic_and -> equality ('&&' equality)*
 
 equality -> comparison (('==' | '!=') comparison)*
 

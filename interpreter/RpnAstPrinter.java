@@ -85,6 +85,11 @@ class RpnAstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitLogicalExpr(Expr.Logical expr) {
+		return buildString(expr.operator.lexeme, expr.left, expr.right);
+	}
+
+	@Override
 	public String visitGroupingExpr(Expr.Grouping expr) {
 		return printExpr(expr.expression);
 	}
