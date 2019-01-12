@@ -59,6 +59,21 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitForStmt(Stmt.For statement) {
+		String forStmt = "(for";
+		
+		if (statement.initializer != null)
+			forStmt = forStmt + " " + printStmt(statement.initializer);
+		
+		forStmt = forStmt + " " + printExpr(statement.condition);
+		
+		if (statement.increment != null)
+			forStmt = forStmt + " " + printExpr(statement.increment);
+		
+		return forStmt + " " + printStmt(statement.body) + ")";
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print statement) {
 		StringBuilder builder = new StringBuilder();
 

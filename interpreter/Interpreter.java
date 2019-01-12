@@ -59,6 +59,21 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Void visitForStmt(Stmt.For stmt) {
+		if (stmt.initializer != null) {
+			execute(stmt.initializer);
+		}
+
+		while(isTruthy(evaluate(stmt.condition))) {
+			execute(stmt.body);
+			if (stmt.increment != null)
+				evaluate(stmt.increment);
+		}
+
+		return null;
+	}
+
+	@Override
 	public Void visitPrintStmt(Stmt.Print stmt) {
 		for (Expr expr : stmt.expressions) {
 			Object val = evaluate(expr);

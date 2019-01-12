@@ -82,7 +82,8 @@ class Parser {
 			else initializer = expressionStatement();
 		}
 
-		Expr condition = null;
+		// if the condition isn't specified, it defaults to true
+		Expr condition = new Expr.Literal(true);
 		if (!check(SEMICOLON)) {
 			condition = expression();
 		}
@@ -96,20 +97,7 @@ class Parser {
 
 		Stmt body = statement();
 
-		return desugarForStatement(initializer, condition, increment, body);
-	}
-
-	private Stmt desugarForStatement(Stmt initializer, Expr condition, Expr increment, Stmt body) {
-		if (increment != null)
-			body = new Stmt.Block(Arrays.asList(body, new Stmt.Expression(increment)));
-		
-		if (condition == null)
-			condition = new Expr.Literal(true);
-		Stmt whileLoop = new Stmt.While(condition, body);
-
-		if (initializer != null)
-			return new Stmt.Block(Arrays.asList(initializer, whileLoop));
-		return whileLoop;
+		return new Stmt.For(initializer, condition, increment, body);
 	}
 
 	private Stmt blockStatement() {
