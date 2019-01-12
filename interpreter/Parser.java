@@ -297,7 +297,34 @@ class Parser {
 			return new Expr.Unary(operator, right);
 		}
 
-		return primary();
+		return call();
+	}
+
+	private Expr call() {
+		Expr expr = primary();
+
+		while (match(LEFT_PAREN)) {
+			Token paren = previous();
+
+			if (match(RIGHT_PAREN)) {
+				expr = new Expr.Call(expr, paren, new ArrayList<>());
+			} else {
+				List<Expr> args = arguments();
+				expr = new Expr.Call(expr, paren, args);
+				consume(RIGHT_PAREN, "Expected ')' at the end of function arguments");
+			}
+		}
+
+		return expr;
+	}
+
+	private List<Expr> arguments() {
+		List<Expr> args = new ArrayList<>();
+		do {
+			args.add(assignment());
+		} while(match(COMMA));
+		
+		return args;
 	}
 
 	private Expr primary() {

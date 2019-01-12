@@ -1,6 +1,7 @@
 package com.interpreter;
 
 import java.util.List;
+import java.util.ArrayList;
 
 import static com.interpreter.TokenType.*;
 
@@ -196,6 +197,30 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
 		// unreachable
 		return null;
+	}
+
+	@Override
+	public Object visitCallExpr(Expr.Call expr) {
+		Object callee = evaluate(expr.callee);
+		
+		List<Object> args = new ArrayList<>();
+		for (Expr arg : expr.arguments) {
+			args.add(evaluate(arg));
+		}
+
+		if (!(callee instanceof Callable)) {
+			throw new RuntimeError(expr.paren, "Object isn't callable");
+		}
+
+		Callable function = (Callable)callee;
+		if (args.size() != function.arity()) {
+			throw new RuntimeError(expr.paren,
+				"Expected " + function.arity() + " arguments "
+				+ "but got " + args.size() + " instead."
+			);
+		}
+
+		return function.call(this, args);
 	}
 
 	@Override

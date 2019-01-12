@@ -50,5 +50,9 @@ multiplication -> unary (('*' | '/') unary)*
 
 unary -> (('!' | '-') unary) | primary
 
+call -> primary ('(' arguments? ')')*
+
+arguments -> assignment (',' assignment)*
+
 primary -> 'true' | 'false' | NUMBER | STRING
 	| '(' expression ')' | IDENTIFIER

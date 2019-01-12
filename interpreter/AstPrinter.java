@@ -122,6 +122,23 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitCallExpr(Expr.Call expr) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("(");
+		builder.append("call ");
+		builder.append(printExpr(expr.callee));
+		for (Expr arg : expr.arguments) {
+			builder.append(" ");
+			// get string representation of [expr]
+			builder.append(printExpr(arg));
+		}
+		builder.append(")");
+
+		return builder.toString();
+	}
+
+	@Override
 	public String visitLogicalExpr(Expr.Logical expr) {
 		return parenthesize(expr.operator.lexeme, expr.left, expr.right);
 	}
