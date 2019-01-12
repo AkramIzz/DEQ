@@ -27,7 +27,7 @@ printStmt -> 'print' ternary (',' ternary)* ';'
 
 exprStmt -> expression ';'
 
-expression -> assignment
+expression -> comma
 
 comma -> assignment (',' assignment)*
 
