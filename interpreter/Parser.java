@@ -146,15 +146,27 @@ class Parser {
 	}
 
 	private Expr expression() {
-		return assignment();
+		return comma();
+	}
+
+	private Expr comma() {
+		Expr expr = assignment();
+
+		while (match(COMMA)) {
+			Token operator = previous();
+			Expr right = assignment();
+			expr = new Expr.Binary(expr, operator, right);
+		}
+
+		return expr;
 	}
 
 	private Expr assignment() {
-		Expr expr = comma();
+		Expr expr = ternary();
 
 		if (match(EQUAL)) {
 			Token equals = previous();
-			Expr rvalue = comma();
+			Expr rvalue = ternary();
 			if (expr instanceof Expr.Variable) {
 				Token name = ((Expr.Variable)expr).name;
 				return new Expr.Assign(name, rvalue);
@@ -164,18 +176,6 @@ class Parser {
 			// isn't in a confused state and doesn't need to be
 			// synchronized. It's in a state where it can continue parsing
 			error(equals, "Can't assign to non variable");
-		}
-
-		return expr;
-	}
-
-	private Expr comma() {
-		Expr expr = ternary();
-
-		while (match(COMMA)) {
-			Token operator = previous();
-			Expr right = ternary();
-			expr = new Expr.Binary(expr, operator, right);
 		}
 
 		return expr;

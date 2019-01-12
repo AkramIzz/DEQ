@@ -25,10 +25,10 @@ exprStmt -> expression ';'
 
 expression -> assignment
 
-assignment -> IDENTIFIER '=' assignment 
-             | comma
+comma -> assignment (',' assignment)*
 
-comma -> ternary (',' ternary)*
+assignment -> IDENTIFIER '=' assignment 
+             | ternary
 
 ternary -> logic_or ('?' ternary ':' ternary)?
 
