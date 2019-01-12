@@ -9,6 +9,8 @@ abstract class Stmt {
         R visitIfStmt(If stmt);
         R visitWhileStmt(While stmt);
         R visitForStmt(For stmt);
+        R visitBreakStmt(Break stmt);
+        R visitContinueStmt(Continue stmt);
         R visitPrintStmt(Print stmt);
         R visitVarStmt(Var stmt);
     }
@@ -85,6 +87,26 @@ abstract class Stmt {
         final Expr condition;
         final Expr increment;
         final Stmt body;
+    }
+
+    static class Break extends Stmt {
+        Break() {
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitBreakStmt(this);
+        }
+
+    }
+
+    static class Continue extends Stmt {
+        Continue() {
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitContinueStmt(this);
+        }
+
     }
 
     static class Print extends Stmt {

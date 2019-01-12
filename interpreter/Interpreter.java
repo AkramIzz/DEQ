@@ -5,6 +5,11 @@ import java.util.List;
 import static com.interpreter.TokenType.*;
 
 class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
+	// These exceptions are used to jump the call stack to the loop
+	// where break and continue statements can be handled.
+	private static class BreakException extends RuntimeException {}
+	private static class ContinueException extends RuntimeException {}
+
 	private Environment environment = new Environment();
 
 	public void interpret(List<Stmt> statements) {
@@ -52,8 +57,16 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitWhileStmt(Stmt.While stmt) {
-		while(isTruthy(evaluate(stmt.condition))) {
-			execute(stmt.body);
+		try {
+			while(isTruthy(evaluate(stmt.condition))) {
+				try {
+					execute(stmt.body);
+				} catch (ContinueException ex) {
+					// Do nothing
+				}
+			}
+		} catch (BreakException ex) {
+			// Do nothing
 		}
 		return null;
 	}
@@ -64,13 +77,31 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 			execute(stmt.initializer);
 		}
 
-		while(isTruthy(evaluate(stmt.condition))) {
-			execute(stmt.body);
-			if (stmt.increment != null)
-				evaluate(stmt.increment);
+		try {
+			while(isTruthy(evaluate(stmt.condition))) {
+				try {
+					execute(stmt.body);
+				} catch (ContinueException ex) {
+					// Do nothing
+				}
+				if (stmt.increment != null)
+					evaluate(stmt.increment);
+			}
+		} catch (BreakException ex) {
+			// Do nothing
 		}
 
 		return null;
+	}
+
+	@Override
+	public Void visitBreakStmt(Stmt.Break stmt) {
+		throw new BreakException();
+	}
+
+	@Override
+	public Void visitContinueStmt(Stmt.Continue stmt) {
+		throw new ContinueException();
 	}
 
 	@Override

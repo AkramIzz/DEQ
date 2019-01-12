@@ -32,6 +32,12 @@ public class GenerateAst {
 			"If         : Expr condition, Stmt thenBranch, Stmt elseBranch",
 			"While      : Expr condition, Stmt body",
 			"For        : Stmt initializer, Expr condition, Expr increment, Stmt body",
+			// ATTENTION: DO NOT delete the space after ':'
+			// because in defineAst method we split the string by ':'
+			// thus having no space gives a string array with only one element,
+			// but two elements string array resulting from this operation is assumed
+			"Break      : ",
+			"Continue   : ",
 			"Print      : List<Expr> expressions",
 			"Var        : Token name, Expr initializer"
 		));
@@ -91,6 +97,9 @@ public class GenerateAst {
 
 		// Extract each field's name
 		String[] fieldsList = fields.split(", ");
+		// if there's no fields as in continue and break statements
+		if (fields.isEmpty())
+			fieldsList = new String[0];
 
 		// Fields value assignment
 		for (String field : fieldsList) {

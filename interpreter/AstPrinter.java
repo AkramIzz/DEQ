@@ -74,6 +74,16 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitBreakStmt(Stmt.Break statement) {
+		return "break";
+	}
+
+	@Override
+	public String visitContinueStmt(Stmt.Continue statement) {
+		return "continue";
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print statement) {
 		StringBuilder builder = new StringBuilder();
 

@@ -11,6 +11,10 @@ class Parser {
 
 	private final List<Token> tokens;
 	private int current = 0;
+	// we need to track if we are in a loop so that
+	// we can report a syntax error if the break and continue
+	// satements are used outside of a loop
+	private int loopDepth = 0;
 
 	Parser(List<Token> tokens) {
 		this.tokens = tokens;
@@ -51,6 +55,8 @@ class Parser {
 		if (match(IF)) return ifStatement();
 		if (match(WHILE)) return whileStatement();
 		if (match(FOR)) return forStatement();
+		if (match(BREAK)) return breakStatement();
+		if (match(CONTINUE)) return continueStatement();
 		if (match(LEFT_BRACE)) return blockStatement();
 
 		return expressionStatement();
@@ -69,8 +75,16 @@ class Parser {
 		consume(LEFT_PAREN, "Expected '(' after while");
 		Expr condition = expression();
 		consume(RIGHT_PAREN, "Expected ')' after while condition");
-		Stmt body = statement();
-		return new Stmt.While(condition, body);
+		
+		++loopDepth;
+		try {
+			Stmt body = statement();
+			return new Stmt.While(condition, body);
+		} finally {
+			// make sure to correct the loop depth
+			// even if a parsing error occurred
+			--loopDepth;
+		}
 	}
 
 	private Stmt forStatement() {
@@ -95,9 +109,31 @@ class Parser {
 		}
 		consume(RIGHT_PAREN, "Expected ')' after for clause");
 
-		Stmt body = statement();
+		++loopDepth;
+		try {
+			Stmt body = statement();
+			return new Stmt.For(initializer, condition, increment, body);
+		} finally {
+			// make sure to correct the loop depth
+			// even if a parsing error occurred
+			--loopDepth;
+		}
+	}
 
-		return new Stmt.For(initializer, condition, increment, body);
+	private Stmt breakStatement() {
+		if (loopDepth == 0) {
+			error(previous(), "break can't be used outside of a loop");
+		}
+		consume(SEMICOLON, "Expected ';' after 'break'");
+		return new Stmt.Break();
+	}
+
+	private Stmt continueStatement() {
+		if (loopDepth == 0) {
+			error(previous(), "continue can't be used outside of a loop");
+		}
+		consume(SEMICOLON, "Expected ';' after 'continue'");
+		return new Stmt.Continue();
 	}
 
 	private Stmt blockStatement() {
