@@ -33,18 +33,23 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitBlockStmt(Stmt.Block stmt) {
-		Environment enclosing = environment;
-		environment = new Environment(enclosing);
+		executeBlock(stmt.statements, new Environment(environment));
+		return null;
+	}
+
+	public void executeBlock(List<Stmt> block, Environment env) {
+		Environment previous = environment;
+		environment = env;
+
 		// Even if a runtimeError is thrown we ensure that the environment
 		// gets restored. This is mainly important in a REPL session
 		try {
-			for (Stmt statement : stmt.statements) {
+			for (Stmt statement : block) {
 				execute(statement);
 			}
 		} finally {
-			environment = enclosing;
+			environment = previous;
 		}
-		return null;
 	}
 
 	@Override
