@@ -13,6 +13,7 @@ abstract class Stmt {
         R visitBreakStmt(Break stmt);
         R visitContinueStmt(Continue stmt);
         R visitPrintStmt(Print stmt);
+        R visitReturnStmt(Return stmt);
         R visitVarStmt(Var stmt);
     }
 
@@ -136,6 +137,20 @@ abstract class Stmt {
         }
 
         final List<Expr> expressions;
+    }
+
+    static class Return extends Stmt {
+        Return(Token keyword, Expr value) {
+            this.keyword = keyword;
+            this.value = value;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitReturnStmt(this);
+        }
+
+        final Token keyword;
+        final Expr value;
     }
 
     static class Var extends Stmt {

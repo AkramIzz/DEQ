@@ -24,7 +24,11 @@ class Function implements Callable {
 			);
 		}
 
-		interpreter.executeBlock(declaration.body, env);
+		try {
+			interpreter.executeBlock(declaration.body, env);
+		} catch (ReturnException ret) {
+			return ret.value;
+		}
 		return null;
 	}
 

@@ -89,6 +89,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitReturnStmt(Stmt.Return statement) {
+		return parenthesize(statement.keyword.lexeme, statement.value);
+	}
+
+	@Override
 	public String visitPrintStmt(Stmt.Print statement) {
 		StringBuilder builder = new StringBuilder();
 

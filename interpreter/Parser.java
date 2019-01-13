@@ -15,6 +15,10 @@ class Parser {
 	// we can report a syntax error if the break and continue
 	// satements are used outside of a loop
 	private int loopDepth = 0;
+	// we also need to track if we are in a function so that
+	// we can report a syntax error if the return statement
+	// is used outside of a function
+	private int funDepth = 0;
 
 	Parser(List<Token> tokens) {
 		this.tokens = tokens;
@@ -54,9 +58,14 @@ class Parser {
 		}
 
 		consume(LEFT_BRACE, "Expected '{' before function body");
-		List<Stmt> body = ((Stmt.Block)blockStatement()).statements;
-
-		return new Stmt.Function(name, parameters, body);
+		++funDepth;
+		try {
+			List<Stmt> body = ((Stmt.Block)blockStatement()).statements;
+			return new Stmt.Function(name, parameters, body);
+		} finally {
+			// correct the funDepth even if a parsing error occured
+			--funDepth;
+		}
 	}
 
 	private List<Token> parameters() {
@@ -88,6 +97,7 @@ class Parser {
 		if (match(BREAK)) return breakStatement();
 		if (match(CONTINUE)) return continueStatement();
 		if (match(LEFT_BRACE)) return blockStatement();
+		if (match(RETURN)) return returnStatement();
 
 		return expressionStatement();
 	}
@@ -175,6 +185,17 @@ class Parser {
 		consume(RIGHT_BRACE, "Expected '}' after block");
 
 		return new Stmt.Block(statements);
+	}
+
+	private Stmt returnStatement() {
+		if (funDepth == 0) {
+			error(previous(), "return can't be used outside of a function");
+		}
+
+		Token keyword = previous();
+		Expr value = check(SEMICOLON) ? null : expression();
+		consume(SEMICOLON, "Expected ';' after return value");
+		return new Stmt.Return(keyword, value);
 	}
 
 	private Stmt printStatement() {

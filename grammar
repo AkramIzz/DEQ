@@ -10,6 +10,7 @@ varDecl -> 'var' IDENTIFIER ('=' expression)? ';'
 
 statement -> printStmt | exprStmt | blockStmt | ifStmt
             | whileStmt | forStmt | breakStmt | continueStmt
+            | returnStmt
 
 ifStmt -> 'if' '(' expression ')' statement ('else' statement)?
 
@@ -26,6 +27,8 @@ breakStmt -> 'break' ';'
 continueStmt -> 'continue' ';'
 
 blockStmt -> '{' declaration* '}'
+
+returnStmt -> 'return' expr ';'
 
 printStmt -> 'print' ternary (',' ternary)* ';'
 
