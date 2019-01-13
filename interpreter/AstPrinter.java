@@ -44,6 +44,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitFunctionStmt(Stmt.Function statement) {
+		return "(fun " + statement.name.lexeme + ")";
+	}
+
+	@Override
 	public String visitIfStmt(Stmt.If statement) {
 		String ifStmt = "(if " + printExpr(statement.condition)
 			+ " " + printStmt(statement.thenBranch);

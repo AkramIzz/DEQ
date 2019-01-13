@@ -1,6 +1,10 @@
 program -> declaration* EOF
 
-declaration -> varDecl | statement;
+declaration -> funDecl | varDecl | statement;
+
+funDecl -> 'fun' IDENTIFIER '(' parameters? ') blockStmt
+
+parameters -> IDENTIFIER (',' IDENTIFIER)*
 
 varDecl -> 'var' IDENTIFIER ('=' expression)? ';'
 

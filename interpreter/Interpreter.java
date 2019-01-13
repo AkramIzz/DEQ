@@ -11,7 +11,8 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	private static class BreakException extends RuntimeException {}
 	private static class ContinueException extends RuntimeException {}
 
-	private Environment environment = new Environment();
+	Environment globals = new Environment();
+	private Environment environment = globals;
 
 	public void interpret(List<Stmt> statements) {
 		try {
@@ -50,6 +51,12 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 		} finally {
 			environment = previous;
 		}
+	}
+
+	@Override
+	public Void visitFunctionStmt(Stmt.Function stmt) {
+		environment.define(stmt.name.lexeme, new Function(stmt));
+		return null;
 	}
 
 	@Override

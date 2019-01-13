@@ -32,12 +32,42 @@ class Parser {
 	private Stmt declaration() {
 		try {
 			if (match(VAR)) return varDecl();
+			if (match(FUN)) return funDecl();
 
 			return statement();
 		} catch (ParseError error) {
 			synchronize();
 			return null;
 		}
+	}
+
+	private Stmt funDecl() {
+		Token name = consume(IDENTIFIER, "Expected function name");
+		consume(LEFT_PAREN, "Expected '(' after function name");
+		
+		List<Token> parameters = null;
+		if (!match(RIGHT_PAREN)) {
+			parameters = parameters();
+			consume(RIGHT_PAREN, "Expected ')' after function parameters");
+		} else {
+			parameters = new ArrayList<>();
+		}
+
+		consume(LEFT_BRACE, "Expected '{' before function body");
+		List<Stmt> body = ((Stmt.Block)blockStatement()).statements;
+
+		return new Stmt.Function(name, parameters, body);
+	}
+
+	private List<Token> parameters() {
+		List<Token> parameters = new ArrayList<>();
+		do {
+			parameters.add(
+				consume(IDENTIFIER, "Expected identifier in parameters list")
+			);
+		} while (match(COMMA));
+
+		return parameters;
 	}
 
 	private Stmt varDecl() {
