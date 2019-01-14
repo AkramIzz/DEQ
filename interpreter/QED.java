@@ -10,6 +10,7 @@ import java.util.List;
 
 public class QED {
 	private static final Interpreter interpreter = new Interpreter();
+	private static final Resolver resolver = new Resolver(interpreter);
 	static boolean hadError = false;
 	static boolean hadRuntimeError = false;
 
@@ -49,6 +50,10 @@ public class QED {
 
 		Parser parser = new Parser(tokens);
 		List<Stmt> statements = parser.parse();
+
+		if (hadError) return;
+
+		resolver.resolve(statements);
 
 		if (hadError) return;
 
