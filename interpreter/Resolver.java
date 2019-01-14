@@ -1,0 +1,229 @@
+package com.interpreter;
+
+import java.util.List;
+import java.util.Stack;
+import java.util.Map;
+import java.util.HashMap;
+
+class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
+	private final Interpreter interpreter;
+	private final Stack<Map<String, Boolean>> scopes = new Stack<>();
+	private final Map<String, Boolean> globalScope = new HashMap<>();
+
+	Resolver(Interpreter interpreter) {
+		this.interpreter = interpreter;
+	}
+
+	void resolve(List<Stmt> statements) {
+		for (Stmt statement : statements) {
+			resolve(statement);
+		}
+	}
+
+	private void resolveExprs(List<Expr> expressions) {
+		for (Expr expr : expressions) {
+			resolve(expr);
+		}
+	}
+
+	private void resolve(Stmt stmt) {
+		stmt.accept(this);
+	}
+
+	private void resolve(Expr expr) {
+		expr.accept(this);
+	}
+
+	private void beginScope() {
+		scopes.push(new HashMap<String, Boolean>());
+	}
+
+	private void endScope() {
+		scopes.pop();
+	}
+
+	@Override
+	public Void visitBlockStmt(Stmt.Block stmt) {
+		beginScope();
+		resolve(stmt.statements);
+		endScope();
+		return null;
+	}
+
+	@Override
+	public Void visitFunctionStmt(Stmt.Function stmt) {
+		declare(stmt.name);
+		define(stmt.name);
+
+		resolveFunction(stmt);
+		return null;
+	}
+
+	private void resolveFunction(Stmt.Function function) {
+		beginScope();
+		for (Token param : function.parameters) {
+			declare(param);
+			define(param);
+		}
+		resolve(function.body);
+		endScope();
+	}
+
+	@Override
+	public Void visitVarStmt(Stmt.Var stmt) {
+		declare(stmt.name);
+		if (stmt.initializer != null) {
+			resolve(stmt.initializer);
+		}
+		define(stmt.name);
+		return null;
+	}
+	
+	@Override
+	public Void visitVariableExpr(Expr.Variable expr) {
+		if (!scopes.isEmpty()
+				&& scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
+			QED.error(expr.name, "Cannot read local variable in its own initializer");
+		}
+
+		resolveLocal(expr, expr.name);
+		return null;
+	}
+
+	@Override
+	public Void visitAssignExpr(Expr.Assign expr) {
+		resolve(expr.value);
+		resolveLocal(expr, expr.name);
+		return null;
+	}
+
+	private void resolveLocal(Expr expr, Token name) {
+		for (int i = scopes.size() - 1; i >= 0; --i) {
+			if (scopes.get(i).containsKey(name.lexeme)) {
+				interpreter.resolve(expr, scopes.size() - 1 - i);
+				return;
+			}
+		}
+
+		if (globalScope.containsKey(name.lexeme)) {
+			// global scope is recognized in the interpreter with -1 distance
+			interpreter.resolve(expr, -1);
+			return;
+		}
+
+		QED.error(name, "Variable " + name.lexeme + " isn't defined in this scope");
+	}
+
+	private void declare(Token name) {
+		Map<String, Boolean> scope = globalScope;
+		if (!scopes.isEmpty()) scope = scopes.peek();
+		if (scope.containsKey(name.lexeme)) {
+			QED.error(name, "Variable " + name.lexeme + " already declared in this scope");
+		}
+		scope.put(name.lexeme, false);
+	}
+
+	private void define(Token name) {
+		Map<String, Boolean> scope = globalScope;
+		if (!scopes.isEmpty()) scope = scopes.peek();
+		scope.put(name.lexeme, true);
+	}
+
+	@Override
+	public Void visitBreakStmt(Stmt.Break stmt) {
+		return null;
+	}
+
+	@Override
+	public Void visitContinueStmt(Stmt.Continue stmt) {
+		return null;
+	}
+
+	@Override
+	public Void visitExpressionStmt(Stmt.Expression stmt) {
+		resolve(stmt.expression);
+		return null;
+	}
+
+	@Override
+	public Void visitForStmt(Stmt.For stmt) {
+		if (stmt.initializer != null) resolve(stmt.initializer);
+		if (stmt.condition != null) resolve(stmt.condition);
+		if (stmt.increment != null) resolve(stmt.increment);
+		resolve(stmt.body);
+		return null;
+	}
+
+	@Override
+	public Void visitIfStmt(Stmt.If stmt) {
+		resolve(stmt.condition);
+		resolve(stmt.thenBranch);
+		if (stmt.elseBranch != null) resolve(stmt.elseBranch);
+		return null;
+	}
+
+	@Override
+	public Void visitPrintStmt(Stmt.Print stmt) {
+		resolveExprs(stmt.expressions);
+		return null;
+	}
+
+	@Override
+	public Void visitReturnStmt(Stmt.Return stmt) {
+		if (stmt.value != null) resolve(stmt.value);
+		return null;
+	}
+
+	@Override
+	public Void visitWhileStmt(Stmt.While stmt) {
+		resolve(stmt.condition);
+		resolve(stmt.body);
+		return null;
+	}
+
+	@Override
+	public Void visitBinaryExpr(Expr.Binary expr) {
+		resolve(expr.left);
+		resolve(expr.right);
+		return null;
+	}
+
+	@Override
+	public Void visitCallExpr(Expr.Call expr) {
+		resolve(expr.callee);
+		resolveExprs(expr.arguments);
+		return null;
+	}
+
+	@Override
+	public Void visitGroupingExpr(Expr.Grouping expr) {
+		resolve(expr.expression);
+		return null;
+	}
+
+	@Override
+	public Void visitLiteralExpr(Expr.Literal expr) {
+		return null;
+	}
+
+	@Override
+	public Void visitLogicalExpr(Expr.Logical expr) {
+		resolve(expr.left);
+		resolve(expr.right);
+		return null;
+	}
+
+	@Override
+	public Void visitTernaryExpr(Expr.Ternary expr) {
+		resolve(expr.condition);
+		resolve(expr.onTrue);
+		resolve(expr.onFalse);
+		return null;
+	}
+
+	@Override
+	public Void visitUnaryExpr(Expr.Unary expr) {
+		resolve(expr.right);
+		return null;
+	}
+}
