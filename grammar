@@ -30,7 +30,7 @@ blockStmt -> '{' declaration* '}'
 
 returnStmt -> 'return' expr ';'
 
-printStmt -> 'print' ternary (',' ternary)* ';'
+printStmt -> 'print' assignment (',' assignment)* ';'
 
 exprStmt -> expression ';'
 

@@ -202,12 +202,12 @@ class Parser {
 		List<Expr> exprs = new ArrayList<>();
 		// we don't want to accept comma operator,
 		// because comma in print statement is used to seperate values
-		// that must be printed, and so we parse a ternary (next expression in precedence)
+		// that must be printed, and so we parse the next expression in precedence
 		// and handle the comma token seperately from the comma operator.
-		exprs.add(ternary());
+		exprs.add(assignment());
 
 		while(match(COMMA)) {
-			exprs.add(ternary());
+			exprs.add(assignment());
 		}
 
 		consume(SEMICOLON, "Expected ';' at the end of print statement");
