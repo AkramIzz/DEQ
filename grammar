@@ -40,7 +40,7 @@ expression -> comma
 
 comma -> assignment (',' assignment)*
 
-assignment -> IDENTIFIER '=' assignment 
+assignment -> (call '.')? IDENTIFIER '=' assignment 
              | ternary
 
 ternary -> logic_or ('?' ternary ':' ternary)?
@@ -59,7 +59,7 @@ multiplication -> unary (('*' | '/') unary)*
 
 unary -> (('!' | '-') unary) | primary
 
-call -> primary ('(' arguments? ')')*
+call -> primary ( '(' arguments? ')' | "." IDENTIFIER )*
 
 arguments -> assignment (',' assignment)*
 

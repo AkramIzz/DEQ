@@ -18,6 +18,8 @@ public class GenerateAst {
 			"Binary   : Expr left, Token operator, Expr right",
 			// paren is needed for error reporting
 			"Call     : Expr callee, Token paren, List<Expr> arguments",
+			"Get      : Expr object, Token name",
+			"Set      : Expr object, Token name, Expr value",
 			// This makes for cleaner impl in interpreter than cramming them in
 			// Binary expression type, although it's possible
 			"Logical  : Expr left, Token operator, Expr right",

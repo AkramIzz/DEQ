@@ -181,6 +181,18 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Object visitSetExpr(Expr.Set expr) {
+		Object object = evaluate(expr.object);
+		if (!(object instanceof Instance)) {
+			throw new RuntimeError(expr.name, "Can't set a field in non instance object");
+		}
+
+		Object value = evaluate(expr.value);
+		((Instance)object).set(expr.name, value);
+		return value;
+	}
+
+	@Override
 	public Object visitBinaryExpr(Expr.Binary expr) {
 		Object left = evaluate(expr.left);
 		Object right = evaluate(expr.right);
@@ -263,6 +275,16 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 		}
 
 		return function.call(this, args);
+	}
+
+	@Override
+	public Object visitGetExpr(Expr.Get expr) {
+		Object instance = evaluate(expr.object);
+		if (instance instanceof Instance) {
+			return ((Instance) instance).get(expr.name);
+		} else {
+			throw new RuntimeError(expr.name, "Only instances have properties");
+		}
 	}
 
 	@Override

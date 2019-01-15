@@ -256,9 +256,13 @@ class Parser {
 		if (match(EQUAL)) {
 			Token equals = previous();
 			Expr rvalue = ternary();
+
 			if (expr instanceof Expr.Variable) {
 				Token name = ((Expr.Variable)expr).name;
 				return new Expr.Assign(name, rvalue);
+			} else if (expr instanceof Expr.Get) {
+				Expr.Get get = (Expr.Get)expr;
+				return new Expr.Set(get.object, get.name, rvalue); 
 			}
 
 			// We don't need to throw the error because the parser
@@ -368,16 +372,29 @@ class Parser {
 	private Expr call() {
 		Expr expr = primary();
 
-		while (match(LEFT_PAREN)) {
-			Token paren = previous();
-
-			if (match(RIGHT_PAREN)) {
-				expr = new Expr.Call(expr, paren, new ArrayList<>());
+		while (true) {
+			if (match(LEFT_PAREN)) {
+				expr = finishCall(expr);
+			} else if (match(DOT)) {
+				Token name = consume(IDENTIFIER, "Expected property name after '.'");
+				expr = new Expr.Get(expr, name);
 			} else {
-				List<Expr> args = arguments();
-				expr = new Expr.Call(expr, paren, args);
-				consume(RIGHT_PAREN, "Expected ')' at the end of function arguments");
+				break;
 			}
+		}
+
+		return expr;
+	}
+
+	private Expr finishCall(Expr expr) {
+		Token paren = previous();
+
+		if (match(RIGHT_PAREN)) {
+			expr = new Expr.Call(expr, paren, new ArrayList<>());
+		} else {
+			List<Expr> args = arguments();
+			expr = new Expr.Call(expr, paren, args);
+			consume(RIGHT_PAREN, "Expected ')' at the end of function arguments");
 		}
 
 		return expr;
