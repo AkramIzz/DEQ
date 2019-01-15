@@ -63,6 +63,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Void visitClassStmt(Stmt.Class stmt) {
+		environment.define(stmt.name.lexeme, null);
+		Class klass = new Class(stmt.name.lexeme);
+		environment.assign(stmt.name, klass);
+		return null;
+	}
+
+	@Override
 	public Void visitFunctionStmt(Stmt.Function stmt) {
 		environment.define(stmt.name.lexeme, new Function(stmt, environment));
 		return null;

@@ -44,6 +44,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitClassStmt(Stmt.Class statement) {
+		return "(class " + statement.name.lexeme + ")";
+	}
+
+	@Override
 	public String visitFunctionStmt(Stmt.Function statement) {
 		return "(fun " + statement.name.lexeme + ")";
 	}

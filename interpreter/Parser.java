@@ -37,12 +37,26 @@ class Parser {
 		try {
 			if (match(VAR)) return varDecl();
 			if (match(FUN)) return funDecl();
+			if (match(CLASS)) return classDecl();
 
 			return statement();
 		} catch (ParseError error) {
 			synchronize();
 			return null;
 		}
+	}
+
+	private Stmt classDecl() {
+		Token name = consume(IDENTIFIER, "Expected class name");
+		consume(LEFT_BRACE, "Expected '{' after class name");
+
+		List<Stmt.Function> methods = new ArrayList<>();
+		while(match(FUN)) {
+			methods.add((Stmt.Function)funDecl());
+		}
+
+		consume(RIGHT_BRACE, "Expected '}' at the end of class definition");
+		return new Stmt.Class(name, methods);
 	}
 
 	private Stmt funDecl() {
