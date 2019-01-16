@@ -1,12 +1,23 @@
 package com.interpreter;
 
 import java.util.List;
+import java.util.Map;
 
 class Class implements Callable {
 	final String name;
+	private final Map<String, Function> methods;
 
-	Class(String name) {
+	Class(String name, Map<String, Function> methods) {
 		this.name = name;
+		this.methods = methods;
+	}
+
+	Function findMethod(Instance instance, String name) {
+		if (methods.containsKey(name)) {
+			return methods.get(name);
+		}
+
+		return null;
 	}
 
 	public int arity() {
