@@ -11,6 +11,12 @@ class Function implements Callable {
 		this.closure = closure;
 	}
 
+	Function bind(Instance instance) {
+		Environment environment = new Environment(closure);
+		environment.define("this", instance);
+		return new Function(declaration, environment);
+	}
+
 	@Override
 	public int arity() {
 		return declaration.parameters.size();

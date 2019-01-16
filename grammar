@@ -64,4 +64,4 @@ call -> primary ( '(' arguments? ')' | "." IDENTIFIER )*
 arguments -> assignment (',' assignment)*
 
 primary -> 'true' | 'false' | NUMBER | STRING
-	| '(' expression ')' | IDENTIFIER
+	| '(' expression ')' | IDENTIFIER | 'this'

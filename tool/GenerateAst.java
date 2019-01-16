@@ -20,6 +20,7 @@ public class GenerateAst {
 			"Call     : Expr callee, Token paren, List<Expr> arguments",
 			"Get      : Expr object, Token name",
 			"Set      : Expr object, Token name, Expr value",
+			"This     : Token keyword",
 			// This makes for cleaner impl in interpreter than cramming them in
 			// Binary expression type, although it's possible
 			"Logical  : Expr left, Token operator, Expr right",
