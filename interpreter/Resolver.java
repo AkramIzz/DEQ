@@ -117,6 +117,10 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitThisExpr(Expr.This expr) {
+		if (currentFunction != FunctionType.METHOD) {
+			QED.error(expr.keyword, "'this' can't be used outside of a class method");
+			return null;
+		}
 		resolveLocal(expr, expr.keyword);
 		return null;
 	}
