@@ -206,7 +206,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	@Override
 	public Void visitReturnStmt(Stmt.Return stmt) {
 		if (currentFunction == FunctionType.NONE) {
-			QED.error(stmt.keyword, "return can't be used outside of a function");
+			QED.error(stmt.keyword, "'return' can't be used outside of a function");
 		}
 
 		if (stmt.value != null) resolve(stmt.value);
