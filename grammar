@@ -30,7 +30,7 @@ continueStmt -> 'continue' ';'
 
 blockStmt -> '{' declaration* '}'
 
-returnStmt -> 'return' expr ';'
+returnStmt -> 'return' expr? ';'
 
 printStmt -> 'print' assignment (',' assignment)* ';'
 
