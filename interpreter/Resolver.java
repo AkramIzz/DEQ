@@ -9,9 +9,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	private final Interpreter interpreter;
 	private final Stack<Map<String, Boolean>> scopes = new Stack<>();
 	private final Map<String, Boolean> globalScope = new HashMap<>();
+	private FunctionType currentFunction = FunctionType.NONE;
 
 	Resolver(Interpreter interpreter) {
 		this.interpreter = interpreter;
+	}
+
+	private enum FunctionType {
+		NONE, FUNCTION
 	}
 
 	void resolve(List<Stmt> statements) {
@@ -61,12 +66,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	public Void visitFunctionStmt(Stmt.Function stmt) {
 		declare(stmt.name);
 		define(stmt.name);
-
-		resolveFunction(stmt);
+		resolveFunction(stmt, FunctionType.FUNCTION);
 		return null;
 	}
 
-	private void resolveFunction(Stmt.Function function) {
+	private void resolveFunction(Stmt.Function function, FunctionType type) {
+		FunctionType enclosingFunction = currentFunction;
+		currentFunction = type;
+
 		beginScope();
 		for (Token param : function.parameters) {
 			declare(param);
@@ -74,6 +81,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 		}
 		resolve(function.body);
 		endScope();
+
+		currentFunction = enclosingFunction;
 	}
 
 	@Override
@@ -177,6 +186,10 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitReturnStmt(Stmt.Return stmt) {
+		if (currentFunction == FunctionType.NONE) {
+			QED.error(stmt.keyword, "return can't be used outside of a function");
+		}
+
 		if (stmt.value != null) resolve(stmt.value);
 		return null;
 	}
