@@ -32,9 +32,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	void resolve(Expr expr, int depth) {
-		if (depth != -1)
-			locals.put(expr, depth);
-		// else it's a global variable
+		locals.put(expr, depth);
 	}
 
 	private Object evaluate(Expr expr) {

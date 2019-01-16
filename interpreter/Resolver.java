@@ -8,7 +8,6 @@ import java.util.HashMap;
 class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	private final Interpreter interpreter;
 	private final Stack<Map<String, Boolean>> scopes = new Stack<>();
-	private final Map<String, Boolean> globalScope = new HashMap<>();
 	private FunctionType currentFunction = FunctionType.NONE;
 
 	Resolver(Interpreter interpreter) {
@@ -144,18 +143,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 			}
 		}
 
-		if (globalScope.containsKey(name.lexeme)) {
-			// global scope is recognized in the interpreter with -1 distance
-			interpreter.resolve(expr, -1);
-			return;
-		}
-
-		QED.error(name, "Variable " + name.lexeme + " isn't defined in this scope");
+		// assume global
+		return;
 	}
 
 	private void declare(Token name) {
-		Map<String, Boolean> scope = globalScope;
-		if (!scopes.isEmpty()) scope = scopes.peek();
+		if (scopes.isEmpty()) return;
+
+		Map<String, Boolean> scope = scopes.peek();
 		if (scope.containsKey(name.lexeme)) {
 			QED.error(name, "Variable " + name.lexeme + " already declared in this scope");
 		}
@@ -163,8 +158,9 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	}
 
 	private void define(Token name) {
-		Map<String, Boolean> scope = globalScope;
-		if (!scopes.isEmpty()) scope = scopes.peek();
+		if (scopes.isEmpty()) return;
+		
+		Map<String, Boolean> scope = scopes.peek();
 		scope.put(name.lexeme, true);
 	}
 
