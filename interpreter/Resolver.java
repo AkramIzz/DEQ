@@ -16,7 +16,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	}
 
 	private enum FunctionType {
-		NONE, FUNCTION, METHOD
+		NONE, FUNCTION, METHOD, INITIALIZER
 	}
 
 	void resolve(List<Stmt> statements) {
@@ -64,7 +64,11 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 		scopes.peek().put("this", true);
 
 		for (Stmt.Function method : stmt.methods) {
-			resolveFunction(method, FunctionType.METHOD);
+			FunctionType type = FunctionType.METHOD;
+			if (method.name.lexeme.equals("init"))
+				type = FunctionType.INITIALIZER;
+
+			resolveFunction(method, type);
 		}
 
 		endScope();
@@ -209,7 +213,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 			QED.error(stmt.keyword, "'return' can't be used outside of a function");
 		}
 
-		if (stmt.value != null) resolve(stmt.value);
+		if (stmt.value != null) {
+			if (currentFunction == FunctionType.INITIALIZER) {
+				QED.error(stmt.keyword, "'return' with value can't be used in a method");
+			}
+
+			resolve(stmt.value);
+		}
+		
 		return null;
 	}
 

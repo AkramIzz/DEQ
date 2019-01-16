@@ -21,11 +21,16 @@ class Class implements Callable {
 	}
 
 	public int arity() {
+		if (methods.containsKey("init"))
+			return methods.get("init").arity();
 		return 0;
 	}
 
 	public Object call(Interpreter interpreter, List<Object> arguments) {
 		Instance instance = new Instance(this);
+		Function initializer = findMethod(instance, "init");
+		if (initializer != null)
+			initializer.call(interpreter, arguments);
 		return instance;
 	}
 
