@@ -63,6 +63,14 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	@Override
 	public Void visitClassStmt(Stmt.Class stmt) {
 		environment.define(stmt.name.lexeme, null);
+
+		Object superclass = null;
+		if (stmt.superclass != null) {
+			superclass = evaluate(stmt.superclass);
+			if (!(superclass instanceof Class)) {
+				throw new RuntimeError(stmt.superclass.name, "Can't inheret from non class");
+			}
+		}
 		
 		Map<String, Function> methods = new HashMap<>();
 		for (Stmt.Function method : stmt.methods) {
@@ -71,7 +79,7 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 			methods.put(method.name.lexeme, function);
 		}
 
-		Class klass = new Class(stmt.name.lexeme, methods);
+		Class klass = new Class(stmt.name.lexeme, (Class)superclass, methods);
 		environment.assign(stmt.name, klass);
 		return null;
 	}

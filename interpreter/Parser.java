@@ -44,6 +44,13 @@ class Parser {
 
 	private Stmt classDecl() {
 		Token name = consume(IDENTIFIER, "Expected class name");
+
+		Expr.Variable superclass = null;
+		if (match(COLON)) {
+			superclass = new Expr.Variable(
+				consume(IDENTIFIER, "Expected class name after ':'"));
+		}
+
 		consume(LEFT_BRACE, "Expected '{' after class name");
 
 		List<Stmt.Function> methods = new ArrayList<>();
@@ -52,7 +59,7 @@ class Parser {
 		}
 
 		consume(RIGHT_BRACE, "Expected '}' at the end of class definition");
-		return new Stmt.Class(name, methods);
+		return new Stmt.Class(name, superclass, methods);
 	}
 
 	private Stmt funDecl() {

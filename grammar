@@ -2,7 +2,7 @@ program -> declaration* EOF
 
 declaration -> classDecl | funDecl | varDecl | statement;
 
-classDecl -> 'class' IDENTIFIER '{' funDecl* '}'
+classDecl -> 'class' IDENTIFIER (':' IDENTIFIER)? '{' funDecl* '}'
 
 funDecl -> 'fun' IDENTIFIER '(' parameters? ') blockStmt
 

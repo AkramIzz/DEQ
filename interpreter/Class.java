@@ -5,10 +5,12 @@ import java.util.Map;
 
 class Class implements Callable {
 	final String name;
+	final Class superclass;
 	private final Map<String, Function> methods;
 
-	Class(String name, Map<String, Function> methods) {
+	Class(String name, Class superclass, Map<String, Function> methods) {
 		this.name = name;
+		this.superclass = superclass;
 		this.methods = methods;
 	}
 
@@ -17,12 +19,19 @@ class Class implements Callable {
 			return methods.get(name).bind(instance);
 		}
 
+		if (superclass != null) {
+			return superclass.findMethod(instance, name);
+		}
+
 		return null;
 	}
 
 	public int arity() {
 		if (methods.containsKey("init"))
 			return methods.get("init").arity();
+		if (superclass != null)
+			return superclass.arity();
+
 		return 0;
 	}
 
