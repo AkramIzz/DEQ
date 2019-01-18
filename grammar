@@ -65,3 +65,4 @@ arguments -> assignment (',' assignment)*
 
 primary -> 'true' | 'false' | NUMBER | STRING
 	| '(' expression ')' | IDENTIFIER | 'this'
+	| 'super' '.' IDENTIFIER

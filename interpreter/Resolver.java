@@ -58,12 +58,18 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	public Void visitClassStmt(Stmt.Class stmt) {
 		declare(stmt.name);
 		define(stmt.name);
+		boolean isSubclass = stmt.superclass != null;
 
-		if (stmt.superclass != null)
+		if (isSubclass)
 			resolve(stmt.superclass);
-
+		
+		if (isSubclass) {
+			beginScope();
+			scopes.peek().put("super", true);
+		}
 		beginScope();
 		scopes.peek().put("this", true);
+		
 
 		for (Stmt.Function method : stmt.methods) {
 			FunctionType type = FunctionType.METHOD;
@@ -74,6 +80,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 		}
 
 		endScope();
+		if (isSubclass) endScope();
 		return null;
 	}
 
@@ -125,6 +132,16 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	public Void visitThisExpr(Expr.This expr) {
 		if (currentFunction != FunctionType.METHOD && currentFunction != FunctionType.INITIALIZER) {
 			QED.error(expr.keyword, "'this' can't be used outside of a class method");
+			return null;
+		}
+		resolveLocal(expr, expr.keyword);
+		return null;
+	}
+
+	@Override
+	public Void visitSuperExpr(Expr.Super expr) {
+		if (currentFunction != FunctionType.METHOD && currentFunction != FunctionType.INITIALIZER) {
+			QED.error(expr.keyword, "'super' can't be used outside of a subclass method");
 			return null;
 		}
 		resolveLocal(expr, expr.keyword);

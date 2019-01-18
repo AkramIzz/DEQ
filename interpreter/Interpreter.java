@@ -72,12 +72,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 			}
 		}
 		
+		Environment previousEnv = environment;
+		if (stmt.superclass != null) {
+			environment = new Environment(environment);
+			environment.define("super", superclass);
+		}
+
 		Map<String, Function> methods = new HashMap<>();
 		for (Stmt.Function method : stmt.methods) {
 			Function function = new Function(method, environment, 
 				method.name.lexeme.equals("init"));
 			methods.put(method.name.lexeme, function);
 		}
+
+		environment = previousEnv;
 
 		Class klass = new Class(stmt.name.lexeme, (Class)superclass, methods);
 		environment.assign(stmt.name, klass);
@@ -354,6 +362,20 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	@Override
 	public Object visitThisExpr(Expr.This expr) {
 		return lookUpVariable(expr.keyword, expr);
+	}
+
+	@Override
+	public Object visitSuperExpr(Expr.Super expr) {
+		Integer superDistance = locals.get(expr);
+		Class superClass = (Class)environment.getAt(superDistance, expr.keyword);
+		// 'this' is always defined in the environment enclosing super's. One environment below.
+		Instance instance = (Instance)environment.getAt(superDistance - 1, "this");
+
+		Function method = superClass.findMethod(instance, expr.method.lexeme);
+		if (method == null) {
+			throw new RuntimeError(expr.method, "Undefined property '" + expr.method.lexeme + "'");
+		}
+		return method;
 	}
 
 	private Object lookUpVariable(Token name, Expr expr) {

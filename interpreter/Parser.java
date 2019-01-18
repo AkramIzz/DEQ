@@ -413,6 +413,13 @@ class Parser {
 
 		if (match(THIS)) return new Expr.This(previous());
 
+		if (match(SUPER)) {
+			Token keyword = previous();
+			consume(DOT, "Expected '.' after 'super'");
+			return new Expr.Super(keyword, 
+				consume(IDENTIFIER, "Expected superclass method name"));
+		}
+
 		if (match(LEFT_PAREN)) {
 			Expr expr = expression();
 			consume(RIGHT_PAREN, "Expected ')' after expression");

@@ -200,6 +200,11 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 		return expr.keyword.lexeme;
 	}
 
+	@Override
+	public String visitSuperExpr(Expr.Super expr) {
+		return "(" + expr.keyword.lexeme + " " + expr.method.lexeme + ")";
+	}
+
 	private String parenthesize(String name, Expr... exprs) {
 		StringBuilder builder = new StringBuilder();
 

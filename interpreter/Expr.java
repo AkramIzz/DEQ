@@ -10,6 +10,7 @@ abstract class Expr {
         R visitGetExpr(Get expr);
         R visitSetExpr(Set expr);
         R visitThisExpr(This expr);
+        R visitSuperExpr(Super expr);
         R visitLogicalExpr(Logical expr);
         R visitGroupingExpr(Grouping expr);
         R visitLiteralExpr(Literal expr);
@@ -106,6 +107,20 @@ abstract class Expr {
         }
 
         final Token keyword;
+    }
+
+    static class Super extends Expr {
+        Super(Token keyword, Token method) {
+            this.keyword = keyword;
+            this.method = method;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitSuperExpr(this);
+        }
+
+        final Token keyword;
+        final Token method;
     }
 
     static class Logical extends Expr {
