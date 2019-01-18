@@ -9,6 +9,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	private final Interpreter interpreter;
 	private final Stack<Map<String, Boolean>> scopes = new Stack<>();
 	private FunctionType currentFunction = FunctionType.NONE;
+	private ClassType currentClass = ClassType.NONE;
 
 	Resolver(Interpreter interpreter) {
 		this.interpreter = interpreter;
@@ -16,6 +17,10 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 	private enum FunctionType {
 		NONE, FUNCTION, METHOD, INITIALIZER
+	}
+
+	private enum ClassType {
+		NONE, CLASS, SUBCLASS
 	}
 
 	void resolve(List<Stmt> statements) {
@@ -70,6 +75,12 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 		beginScope();
 		scopes.peek().put("this", true);
 		
+		ClassType previousClass = currentClass;
+		if (isSubclass) {
+			currentClass = ClassType.SUBCLASS;
+		} else {
+			currentClass = ClassType.CLASS;
+		}
 
 		for (Stmt.Function method : stmt.methods) {
 			FunctionType type = FunctionType.METHOD;
@@ -78,6 +89,8 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 			resolveFunction(method, type);
 		}
+		
+		currentClass = previousClass;
 
 		endScope();
 		if (isSubclass) endScope();
@@ -130,7 +143,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitThisExpr(Expr.This expr) {
-		if (currentFunction != FunctionType.METHOD && currentFunction != FunctionType.INITIALIZER) {
+		if (currentClass == ClassType.NONE) {
 			QED.error(expr.keyword, "'this' can't be used outside of a class method");
 			return null;
 		}
@@ -140,7 +153,7 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 
 	@Override
 	public Void visitSuperExpr(Expr.Super expr) {
-		if (currentFunction != FunctionType.METHOD && currentFunction != FunctionType.INITIALIZER) {
+		if (currentClass != ClassType.SUBCLASS) {
 			QED.error(expr.keyword, "'super' can't be used outside of a subclass method");
 			return null;
 		}
