@@ -333,6 +333,15 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Object visitArrayExpr(Expr.Array expr) {
+		List<Object> array = new ArrayList<>();
+		for (Expr value : expr.values) {
+			array.add(evaluate(value));
+		}
+		return array;
+	}
+
+	@Override
 	public Object visitUnaryExpr(Expr.Unary expr) {
 		Object right = evaluate(expr.right);
 		if (expr.operator.type == MINUS) {
@@ -414,7 +423,30 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 			return text;
 		}
 
+		if (object instanceof ArrayList) {
+			return stringifyArray((ArrayList)object);
+		}
+
 		return object.toString();
+	}
+
+	private String stringifyArray(ArrayList array) {
+		StringBuilder builder = new StringBuilder();
+		
+		builder.append("[");
+		
+		if (array.size() == 0) {
+			builder.append("]");
+			return builder.toString();
+		}
+
+		builder.append(stringify(array.get(0)));
+		for (int i = 1; i < array.size(); ++i) {
+			builder.append(", ");
+			builder.append(stringify(array.get(i)));
+		}
+		builder.append("]");
+		return builder.toString();
 	}
 
 	private void checkNumberOperand(Token operator, Object operand) {

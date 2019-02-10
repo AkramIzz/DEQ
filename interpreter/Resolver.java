@@ -261,6 +261,14 @@ class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Void visitArrayExpr(Expr.Array expr) {
+		for (Expr element : expr.values) {
+			resolve(element);
+		}
+		return null;
+	}
+
+	@Override
 	public Void visitBinaryExpr(Expr.Binary expr) {
 		resolve(expr.left);
 		resolve(expr.right);

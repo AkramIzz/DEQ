@@ -181,6 +181,20 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitArrayExpr(Expr.Array expr) {
+		StringBuilder builder = new StringBuilder();
+
+		builder.append("(array");
+		for (Expr v : expr.values) {
+			builder.append(" ");
+			builder.append(printExpr(v));
+		}
+		builder.append(")");
+		
+		return builder.toString();
+	}
+
+	@Override
 	public String visitUnaryExpr(Expr.Unary expr) {
 		return parenthesize(expr.operator.lexeme, expr.right);
 	}

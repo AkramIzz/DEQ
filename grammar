@@ -63,6 +63,8 @@ call -> primary ( '(' arguments? ')' | "." IDENTIFIER )*
 
 arguments -> assignment (',' assignment)*
 
-primary -> 'true' | 'false' | NUMBER | STRING
+primary -> 'true' | 'false' | NUMBER | STRING | ARRAY
 	| '(' expression ')' | IDENTIFIER | 'this'
 	| 'super' '.' IDENTIFIER
+
+ARRAY -> '[' assignment (',' assignment)* ']'

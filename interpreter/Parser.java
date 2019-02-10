@@ -411,6 +411,8 @@ class Parser {
 
 		if (match(IDENTIFIER)) return new Expr.Variable(previous());
 
+		if (match(LEFT_BRACKET)) return array();
+
 		if (match(THIS)) return new Expr.This(previous());
 
 		if (match(SUPER)) {
@@ -427,6 +429,18 @@ class Parser {
 		}
 
 		throw error(peek(), "Expected an expression");
+	}
+
+	private Expr array() {
+		List<Expr> values = new ArrayList<>();
+		if (match(RIGHT_BRACKET)) return new Expr.Array(values);
+
+		do {
+			values.add(assignment());
+		} while (match(COMMA));
+
+		consume(RIGHT_BRACKET, "Expected ']' after array values");
+		return new Expr.Array(values);
 	}
 
 	private Token consume(TokenType type, String message) {

@@ -14,6 +14,7 @@ public class GenerateAst {
 		String outputDir = args[0];
 		defineAst(outputDir, "Expr", Arrays.asList(
 			// ClassName : Fields
+			"Array    : List<Expr> values",
 			"Assign   : Token name, Expr value",
 			"Binary   : Expr left, Token operator, Expr right",
 			// paren is needed for error reporting
