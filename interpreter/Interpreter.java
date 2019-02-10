@@ -215,6 +215,31 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 	}
 
 	@Override
+	public Object visitArraySetExpr(Expr.ArraySet expr) {
+		Object array_object = evaluate(expr.array);
+		if (!(array_object instanceof ArrayList)) {
+			throw new RuntimeError(expr.bracket, "Object is not subscriptable");
+		}
+		ArrayList<Object> array = (ArrayList<Object>)array_object;
+
+		Object index_object = evaluate(expr.index);
+		if (!(index_object instanceof Double)
+		|| Math.floor((double)index_object) != (double)index_object
+		|| Double.isInfinite((double)index_object)) {
+			throw new RuntimeError(expr.bracket, "Array index must be an integer");
+		}
+		int index = (int)Math.floor((double)index_object);
+
+		if (index < 0 || index >= array.size()) {
+			throw new RuntimeError(expr.bracket, "Array index out of range");
+		}
+		Object value = evaluate(expr.value);
+		array.set(index, value);
+
+		return value;
+	}
+
+	@Override
 	public Object visitBinaryExpr(Expr.Binary expr) {
 		Object left = evaluate(expr.left);
 		Object right = evaluate(expr.right);
@@ -307,6 +332,29 @@ class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 		} else {
 			throw new RuntimeError(expr.name, "Only instances have properties");
 		}
+	}
+
+	@Override
+	public Object visitArrayGetExpr(Expr.ArrayGet expr) {
+		Object array = evaluate(expr.array);
+		Object index_object = evaluate(expr.index);
+		
+		if (!(array instanceof ArrayList)) {
+			throw new RuntimeError(expr.bracket, "Object is not subscriptable");
+		}
+
+		if (!(index_object instanceof Double)
+		|| Math.floor((double)index_object) != (double)index_object
+		|| Double.isInfinite((double)index_object)) {
+			throw new RuntimeError(expr.bracket, "Array index must be an integer");			
+		}
+		
+		int index = (int)Math.floor((double)index_object);
+		if (index < 0 || index >= ((ArrayList)array).size()) {
+			throw new RuntimeError(expr.bracket, "Array index out of range");
+		}
+
+		return ((ArrayList)array).get(index);
 	}
 
 	@Override

@@ -59,7 +59,13 @@ multiplication -> unary (('*' | '/') unary)*
 
 unary -> (('!' | '-') unary) | primary
 
-call -> primary ( '(' arguments? ')' | "." IDENTIFIER )*
+call -> primary (
+      '(' arguments? ')'
+    | "." IDENTIFIER
+    | arrayAccess
+)*
+
+arrayAccess -> '[' expression ']'
 
 arguments -> assignment (',' assignment)*
 

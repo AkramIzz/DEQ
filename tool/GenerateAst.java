@@ -21,6 +21,9 @@ public class GenerateAst {
 			"Call     : Expr callee, Token paren, List<Expr> arguments",
 			"Get      : Expr object, Token name",
 			"Set      : Expr object, Token name, Expr value",
+			// bracket is needed for error handling
+			"ArrayGet : Expr array, Token bracket, Expr index",
+			"ArraySet : Expr array, Token bracket, Expr index, Expr value",
 			"This     : Token keyword",
 			"Super    : Token keyword, Token method",
 			// This makes for cleaner impl in interpreter than cramming them in

@@ -256,6 +256,9 @@ class Parser {
 			} else if (expr instanceof Expr.Get) {
 				Expr.Get get = (Expr.Get)expr;
 				return new Expr.Set(get.object, get.name, rvalue); 
+			} else if (expr instanceof Expr.ArrayGet) {
+				Expr.ArrayGet get = (Expr.ArrayGet)expr;
+				return new Expr.ArraySet(get.array, get.bracket, get.index, rvalue);
 			}
 
 			// We don't need to throw the error because the parser
@@ -371,6 +374,11 @@ class Parser {
 			} else if (match(DOT)) {
 				Token name = consume(IDENTIFIER, "Expected property name after '.'");
 				expr = new Expr.Get(expr, name);
+			} else if (match(LEFT_BRACKET)) {
+				Token bracket = previous();
+				Expr index = expression();
+				consume(RIGHT_BRACKET, "Expected ']' at end of array subscription");
+				expr = new Expr.ArrayGet(expr, bracket, index);
 			} else {
 				break;
 			}

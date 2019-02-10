@@ -10,6 +10,8 @@ abstract class Expr {
         R visitCallExpr(Call expr);
         R visitGetExpr(Get expr);
         R visitSetExpr(Set expr);
+        R visitArrayGetExpr(ArrayGet expr);
+        R visitArraySetExpr(ArraySet expr);
         R visitThisExpr(This expr);
         R visitSuperExpr(Super expr);
         R visitLogicalExpr(Logical expr);
@@ -107,6 +109,40 @@ abstract class Expr {
 
         final Expr object;
         final Token name;
+        final Expr value;
+    }
+
+    static class ArrayGet extends Expr {
+        ArrayGet(Expr array, Token bracket, Expr index) {
+            this.array = array;
+            this.bracket = bracket;
+            this.index = index;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitArrayGetExpr(this);
+        }
+
+        final Expr array;
+        final Token bracket;
+        final Expr index;
+    }
+
+    static class ArraySet extends Expr {
+        ArraySet(Expr array, Token bracket, Expr index, Expr value) {
+            this.array = array;
+            this.bracket = bracket;
+            this.index = index;
+            this.value = value;
+        }
+
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitArraySetExpr(this);
+        }
+
+        final Expr array;
+        final Token bracket;
+        final Expr index;
         final Expr value;
     }
 

@@ -137,8 +137,18 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 	}
 
 	@Override
+	public String visitArrayGetExpr(Expr.ArrayGet expr) {
+		return parenthesize("[get]", expr.array, expr.index);
+	}
+
+	@Override
 	public String visitSetExpr(Expr.Set expr) {
 		return parenthesize("set "+ expr.name.lexeme, expr.object, expr.value);
+	}
+
+	@Override
+	public String visitArraySetExpr(Expr.ArraySet expr) {
+		return parenthesize("[set]", expr.array, expr.index, expr.value);
 	}
 
 	@Override
@@ -190,7 +200,7 @@ class AstPrinter implements Expr.Visitor<String>, Stmt.Visitor<String> {
 			builder.append(printExpr(v));
 		}
 		builder.append(")");
-		
+
 		return builder.toString();
 	}
 
