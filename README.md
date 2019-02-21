@@ -7,7 +7,7 @@ It is usually placed at the end of a mathematical proof to indicate that the pro
 
 # Features
 ## Closures
-```
+```js
 fun make_counter(n) {
   var count = n - 1;
   fun counter() {
@@ -23,7 +23,7 @@ print counter(); // 1
 ```
 
 ## Arrays
-```
+```js
 var arr = [1, 2, nil, "Hello"];
 print arr[2]; // nil
 print arr[4]; // index out of range error
@@ -32,7 +32,7 @@ print arr; // [0, 2, nil, "Hello"];
 ```
 
 ## Classes and Inheritance
-```
+```js
 class Vehicle {
   fun init(wheels) {
     this.wheels = wheels;
